@@ -1,5 +1,6 @@
 package com.joshuamonk.phoneapi.service;
 
+import com.joshuamonk.phoneapi.exception.CustomerNotFoundException;
 import com.joshuamonk.phoneapi.model.entity.Customer;
 import com.joshuamonk.phoneapi.model.repo.CustomerRepo;
 import org.junit.Before;
@@ -59,5 +60,21 @@ public class CustomerServiceTest {
         List<String> result = customerService.getAllNumbers();
 
         assertThat(result).containsExactlyInAnyOrder(numbers.toArray(new String[0]));
+    }
+
+    @Test
+    public void getCustomerNumbers() {
+        when(customerRepo.getCustomerNumbers(1L)).thenReturn(Optional.of(customers.get(1L).getAssociatedNumbers()));
+
+        List<String> result = customerService.getCustomerNumbers(1L);
+
+        assertThat(result).containsExactlyInAnyOrder(customers.get(1L).getAssociatedNumbers().toArray(new String[0]));
+    }
+
+    @Test(expected = CustomerNotFoundException.class)
+    public void getCustomerNumbersFailed() {
+        when(customerRepo.getCustomerNumbers(1L)).thenReturn(Optional.empty());
+
+        List<String> result = customerService.getCustomerNumbers(1L);
     }
 }
