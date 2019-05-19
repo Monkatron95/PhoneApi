@@ -34,7 +34,7 @@ public class CustomerControllerTest {
 
     @Before
     public void setup() {
-        this.numbers = new ArrayList<String>();
+        this.numbers = new ArrayList<>();
         this.customers = new HashMap<Long, Customer>() {
             {
                 put(1L, new Customer(1L, "Bob", "Bobby", "1 Bob Lane", "07876765434", Collections.singletonList("07876765434")));
@@ -59,7 +59,7 @@ public class CustomerControllerTest {
     public void getAllNumbers() {
         when(customerService.getAllNumbers()).thenReturn(numbers);
 
-        Collection<String> result = this.customerController.getAllNumbers();
+        Collection<String> result = this.customerController.getAllNumbers().getBody();
 
         assertThat(result).containsExactlyInAnyOrder(numbers.toArray(new String[0]));
     }

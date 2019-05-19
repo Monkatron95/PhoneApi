@@ -3,11 +3,7 @@ package com.joshuamonk.phoneapi.model.repo;
 import com.joshuamonk.phoneapi.model.entity.Customer;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Repository for handling phone numbers in system
@@ -32,7 +28,7 @@ public class CustomerRepo {
     };
 
     /**
-     * Get all numbers currently associated with a customer in the system
+     * Get all numbers currently stored in the system
      * @return List<String> containing all numbers currently in the system
      */
     public List<String> getAllNumbers() {
@@ -44,5 +40,19 @@ public class CustomerRepo {
         }
 
         return numbersList;
+    }
+
+    /**
+     * Gets all the numbers currently associated with a customer in the system
+     * @param id Id of the customer to find numbers for
+     * @return Optional containing List<String> of numbers
+     */
+    public Optional<List<String>> getCustomerNumbers(long id) {
+        if (customers.containsKey(id)) {
+            List<String> numbers = customers.get(id).getAssociatedNumbers();
+            return Optional.of(numbers);
+        } else {
+            return Optional.empty();
+        }
     }
 }
