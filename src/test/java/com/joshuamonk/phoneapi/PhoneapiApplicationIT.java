@@ -73,5 +73,4 @@ public class PhoneapiApplicationIT {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
-
 }

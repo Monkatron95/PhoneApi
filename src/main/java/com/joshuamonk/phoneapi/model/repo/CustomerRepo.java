@@ -3,7 +3,12 @@ package com.joshuamonk.phoneapi.model.repo;
 import com.joshuamonk.phoneapi.model.entity.Customer;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository for handling phone numbers in system
@@ -51,6 +56,26 @@ public class CustomerRepo {
         if (customers.containsKey(id)) {
             List<String> numbers = customers.get(id).getAssociatedNumbers();
             return Optional.of(numbers);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Gets all the numbers currently associated with a customer in the system
+     * @param id Id of the customer to add number for
+     * @return Optional containing updated Customer object
+     */
+    public Optional<Customer> addCustomerPhoneNumber(long id, String number) {
+        if (customers.containsKey(id)) {
+
+            // Add number to customers associated numbers, activating it in system
+            ArrayList<String> numbers = new ArrayList<>(customers.get(id).getAssociatedNumbers());
+            numbers.add(number);
+            customers.get(id).setAssociatedNumbers(numbers);
+
+            // Return updated customer object
+            return Optional.of(customers.get(id));
         } else {
             return Optional.empty();
         }
