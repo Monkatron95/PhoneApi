@@ -1,5 +1,6 @@
 package com.joshuamonk.phoneapi.controller;
 
+import com.joshuamonk.phoneapi.exception.CustomerNotFoundException;
 import com.joshuamonk.phoneapi.model.entity.Customer;
 import com.joshuamonk.phoneapi.service.CustomerService;
 import org.junit.Before;
@@ -34,7 +35,7 @@ public class CustomerControllerTest {
 
     @Before
     public void setup() {
-        this.numbers = new ArrayList<String>();
+        this.numbers = new ArrayList<>();
         this.customers = new HashMap<Long, Customer>() {
             {
                 put(1L, new Customer(1L, "Bob", "Bobby", "1 Bob Lane", "07876765434", Collections.singletonList("07876765434")));
@@ -59,8 +60,25 @@ public class CustomerControllerTest {
     public void getAllNumbers() {
         when(customerService.getAllNumbers()).thenReturn(numbers);
 
-        Collection<String> result = this.customerController.getAllNumbers();
+        Collection<String> result = this.customerController.getAllNumbers().getBody();
 
         assertThat(result).containsExactlyInAnyOrder(numbers.toArray(new String[0]));
+    }
+
+
+    @Test
+    public void getCustomerNumbersById() {
+        when(customerService.getCustomerNumbers(1L)).thenReturn(customers.get(1L).getAssociatedNumbers());
+
+        Collection<String> result = this.customerController.getCustomerNumbersById(1L).getBody();
+
+        assertThat(result).containsExactlyInAnyOrder(customers.get(1L).getAssociatedNumbers().toArray(new String[0]));
+    }
+
+    @Test(expected = CustomerNotFoundException.class)
+    public void getCustomerNumbersByIdFailed() {
+        when(customerService.getCustomerNumbers(1L)).thenThrow(new CustomerNotFoundException("Customer with id: 1 does not exist"));
+
+        Collection<String> result = this.customerController.getCustomerNumbersById(1L).getBody();
     }
 }
