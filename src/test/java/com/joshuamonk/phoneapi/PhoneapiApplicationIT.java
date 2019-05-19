@@ -8,7 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,7 +62,7 @@ public class PhoneapiApplicationIT {
     }
 
     @Test
-    public void testRetreiveCustomerPhoneNumbers404NotFound() throws JSONException {
+    public void testRetreiveCustomerPhoneNumbers404NotFound() {
 
         long customerId = 200;
 
@@ -72,5 +75,93 @@ public class PhoneapiApplicationIT {
                 HttpMethod.GET, entity, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void testActivateCustomerPhoneNumber() {
+
+        long customerId = 1;
+
+        // Different method for making Http Requests required to overcome PATCH issue
+        // See - https://github.com/spring-cloud/spring-cloud-netflix/issues/1777
+
+        HttpHeaders patchHeaders = new HttpHeaders();
+        MediaType mediaType = new MediaType("application", "merge-patch+json");
+        patchHeaders.setContentType(mediaType);
+
+        HttpEntity<String> entity = new HttpEntity<String>("{\"number\": \"01234567894\"}", patchHeaders);
+
+        String requestUrl = "http://localhost:" + port + "/customers/ " + customerId +"/numbers";
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                requestUrl,
+                HttpMethod.PATCH, entity, String.class);
+
+        // Test for OK response and that response contains activated phone number
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).contains("01234567894");
+    }
+
+    @Test
+    public void testActivateCustomerPhoneNumber404CustomerNotFound() {
+
+        long customerId = 200;
+
+        HttpHeaders patchHeaders = new HttpHeaders();
+        MediaType mediaType = new MediaType("application", "merge-patch+json");
+        patchHeaders.setContentType(mediaType);
+
+        HttpEntity<String> entity = new HttpEntity<String>("{\"number\": \"99999999999\"}", patchHeaders);
+
+        String requestUrl = "http://localhost:" + port + "/customers/ " + customerId +"/numbers";
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                requestUrl,
+                HttpMethod.PATCH, entity, String.class);
+
+        // Test for 404
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void testActivateCustomerPhoneNumber400InvalidPhoneNumber() {
+
+        long customerId = 1;
+
+        HttpHeaders patchHeaders = new HttpHeaders();
+        MediaType mediaType = new MediaType("application", "merge-patch+json");
+        patchHeaders.setContentType(mediaType);
+
+        HttpEntity<String> entity = new HttpEntity<String>("{\"number\": \"\"}", patchHeaders);
+
+        String requestUrl = "http://localhost:" + port + "/customers/ " + customerId +"/numbers";
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                requestUrl,
+                HttpMethod.PATCH, entity, String.class);
+
+        // Test for OK response and that response contains activated phone number
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void testActivateCustomerPhoneNumber400PhoneNumberInUse() {
+
+        long customerId = 1;
+
+        HttpHeaders patchHeaders = new HttpHeaders();
+        MediaType mediaType = new MediaType("application", "merge-patch+json");
+        patchHeaders.setContentType(mediaType);
+
+        HttpEntity<String> entity = new HttpEntity<String>("{\"number\": \"07876765409\"}", patchHeaders);
+
+        String requestUrl = "http://localhost:" + port + "/customers/ " + customerId +"/numbers";
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                requestUrl,
+                HttpMethod.PATCH, entity, String.class);
+
+        // Test for OK response and that response contains activated phone number
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }

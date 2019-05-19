@@ -22,6 +22,7 @@ public class CustomerController {
 
     /**
      * Endpoint for getting all numbers currently stored in the system
+     *
      * @return ResponseEntity containing a collection of numbers in string format
      */
     @RequestMapping(value = "/numbers", method = RequestMethod.GET)
@@ -31,6 +32,7 @@ public class CustomerController {
 
     /**
      * Endpoint for getting all numbers currently associated with a customer
+     *
      * @param id Id of customer to return numbers for
      * @return ResponseEntity containing a collection of numbers in string format
      */
@@ -41,6 +43,7 @@ public class CustomerController {
 
     /**
      * Endpoint for activating a phone number for a customer
+     *
      * @param body Request in JSON format, requiring a "number" parameter
      * @return ResponseEntity with corresponding response code
      */
