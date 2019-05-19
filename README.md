@@ -7,13 +7,13 @@ Repo for phone number management REST API
 
 ## API Design
 Below is a description of the implemented endpoints for the API, with example uses.
-
+_________________________________________________________________________________________________
 ### API description:
 Retrieve a list of all phone numbers currently stored in the system and associated with a customer.
 
 ### API endpoint:
 GET localhost:8080/api/v1/customers/numbers
-
+_________________________________________________________________________________________________
 ### API description:
 Retrieve a list of phone numbers for one particular customer
 
@@ -21,7 +21,7 @@ Retrieve a list of phone numbers for one particular customer
 GET localhost:8080/api/v1/customers/{id}/numbers
 
 {id}: id of customer you wish to make request for, e.g. localhost:8080/api/v1/customers/1/numbers
-
+_________________________________________________________________________________________________
 ### API description:
 Activate a phone number for a given customer
 
